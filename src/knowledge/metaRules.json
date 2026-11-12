@@ -1,0 +1,28 @@
+{
+  "lastUpdated": "2026-11-12",
+  "maxHashtags": 5,
+  "_comment": "maxHashtags: 5 is a demo product constraint, NOT a verified Instagram policy. Verify it against Meta's official announcement before production; JSON does not support native comments.",
+  "entries": [
+    {
+      "title": "Hashtag limit — verification required",
+      "description": "This demo limits caption suggestions to five relevant hashtags. This is an unverified product assumption, not a statement of Meta policy. Verify against Meta's official announcement before launch.",
+      "source": "https://creators.instagram.com/",
+      "lastUpdated": "2026-11-12",
+      "status": "needs-verification"
+    },
+    {
+      "title": "Original content comes first",
+      "description": "Demo guidance: favor your own footage and a distinct creative point of view. Check current recommendation eligibility in Instagram's official documentation before publishing policy guidance.",
+      "source": "https://transparency.meta.com/policies/community-standards/recommendation-guidelines/",
+      "lastUpdated": "2026-11-12",
+      "status": "demo-guidance"
+    },
+    {
+      "title": "Make every reel accessible",
+      "description": "Demo editorial advice: add legible captions, review automatic transcription, and keep important text away from interface overlays. This is a creative recommendation, not a guaranteed ranking factor.",
+      "source": "https://help.instagram.com/",
+      "lastUpdated": "2026-11-12",
+      "status": "demo-guidance"
+    }
+  ]
+}
