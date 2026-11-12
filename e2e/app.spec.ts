@@ -17,12 +17,16 @@ test('landing enters the demo without authentication', async ({ page }) => {
   await expect(page.getByText('24,832 total followers')).toBeVisible();
 });
 
-test('Instagram button explains the mock boundary and traps focus', async ({ page }) => {
+test('Instagram button discloses official login permissions and traps focus', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Continue with Instagram' }).click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
-  await expect(dialog).toContainText('Instagram sign-in isn’t connected');
+  await expect(dialog).toContainText('Meta’s official Unified Login');
+  await expect(dialog).toContainText('never reads or sends messages');
+  await expect(
+    dialog.getByRole('link', { name: 'Continue securely with Instagram' }),
+  ).toHaveAttribute('href', '/api/instagram/login');
   await page.keyboard.press('Shift+Tab');
   await expect(dialog.getByRole('link', { name: 'Try Demo Mode' })).toBeFocused();
   await page.keyboard.press('Escape');

@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023", "DOM"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "outDir": ".server-dist",
+    "rootDir": ".",
+    "verbatimModuleSyntax": true
+  },
+  "include": ["server/**/*.ts", "api/**/*.ts", "src/instagram/types.ts"],
+  "exclude": ["server/**/*.test.ts", "api/**/*.test.ts"]
+}

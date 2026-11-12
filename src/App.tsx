@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, Route, Routes, useLocation } from 'react-router-dom';
-import { Shell } from './components/Shell';
+import { Shell, Logo, ThemeButton } from './components/Shell';
 import { Landing } from './pages/Landing';
 
 // Keep analytics and editor code out of the public landing page's initial bundle.
@@ -13,6 +13,8 @@ const CaptionStudio = lazy(() =>
   import('./pages/CaptionStudio').then((m) => ({ default: m.CaptionStudio })),
 );
 const Knowledge = lazy(() => import('./pages/Knowledge').then((m) => ({ default: m.Knowledge })));
+const InstagramApp = lazy(() => import('./instagram/InstagramApp'));
+const Privacy = lazy(() => import('./instagram/Privacy').then((m) => ({ default: m.Privacy })));
 
 export default function App() {
   const [theme, setTheme] = useState(() => {
@@ -43,6 +45,34 @@ export default function App() {
       </a>
       {location.pathname === '/' ? (
         <Landing theme={theme} toggleTheme={toggleTheme} />
+      ) : location.pathname === '/instagram' || location.pathname.startsWith('/instagram/') ? (
+        <Suspense
+          fallback={
+            <div className="empty-state" role="status">
+              Opening your Instagram workspace…
+            </div>
+          }
+        >
+          <Routes>
+            <Route
+              path="/instagram/*"
+              element={<InstagramApp theme={theme} toggleTheme={toggleTheme} />}
+            />
+          </Routes>
+        </Suspense>
+      ) : location.pathname === '/what-reelcoach-can-see' ? (
+        <>
+          <header className="landing-header">
+            <Logo />
+            <Link to="/">Back to ReelCoach</Link>
+            <ThemeButton theme={theme} toggle={toggleTheme} />
+          </header>
+          <main id="main-content">
+            <Suspense fallback={<div className="empty-state">Loading privacy information…</div>}>
+              <Privacy />
+            </Suspense>
+          </main>
+        </>
       ) : (
         <Shell theme={theme} toggleTheme={toggleTheme}>
           <Suspense

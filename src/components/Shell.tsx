@@ -17,6 +17,7 @@ import {
   X,
   Check,
   LogOut,
+  ShieldCheck,
 } from 'lucide-react';
 import { creator } from '../data/mock';
 import metaRules from '../knowledge/metaRules.json';
@@ -52,16 +53,31 @@ export function Shell({
   children,
   theme,
   toggleTheme,
+  workspace,
 }: {
   children: ReactNode;
   theme: string;
   toggleTheme: () => void;
+  workspace?: {
+    name: string;
+    handle: string;
+    avatar: string | null;
+    onDisconnect: () => void;
+    disconnecting: boolean;
+  };
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notices, setNotices] = useState(false);
   const [read, setRead] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const { pathname } = useLocation();
+  const person = workspace ?? {
+    name: creator.name,
+    handle: creator.handle,
+    avatar: creator.avatar,
+  };
+  const route = (page: string) =>
+    workspace ? `/instagram${page === 'dashboard' ? '' : `/${page}`}` : `/${page}`;
   const page = pathname.includes('studio')
     ? 'Caption studio'
     : pathname.includes('knowledge')
@@ -70,7 +86,9 @@ export function Shell({
         ? 'Reel analysis'
         : pathname.includes('reels')
           ? 'Your reels'
-          : 'Overview';
+          : pathname.includes('privacy')
+            ? 'What ReelCoach Can See'
+            : 'Overview';
   const close = () => setMobileOpen(false);
   return (
     <div className="app-shell">
@@ -88,35 +106,42 @@ export function Shell({
           YOUR WORKSPACE <span className="tiny-dot" />
         </div>
         <div className="creator-switch">
-          <img src={creator.avatar} alt="" />
+          <img src={person.avatar || '/favicon.svg'} alt="" />
           <div>
-            <strong>Alex’s workspace</strong>
+            <strong>{workspace ? person.name : 'Alex’s workspace'}</strong>
             <span>
-              Creator account <span className="mini-badge">DEMO</span>
+              {workspace ? 'Instagram account' : 'Creator account'}{' '}
+              <span className="mini-badge">{workspace ? 'LIVE' : 'DEMO'}</span>
             </span>
           </div>
           <ChevronDown size={14} />
         </div>
         <div className="nav-label">CREATE WITH INTENTION</div>
         <nav className="main-nav" aria-label="Main navigation">
-          <NavLink to="/dashboard" onClick={close}>
+          <NavLink to={route('dashboard')} end={Boolean(workspace)} onClick={close}>
             <LayoutDashboard size={19} />
             Overview
             <span className="nav-active-dot" />
           </NavLink>
-          <NavLink to="/reels" onClick={close}>
+          <NavLink to={route('reels')} onClick={close}>
             <Clapperboard size={19} />
-            Your reels<span className="nav-count">15</span>
+            Your reels{!workspace && <span className="nav-count">15</span>}
           </NavLink>
-          <NavLink to="/studio" onClick={close}>
+          <NavLink to={route('studio')} onClick={close}>
             <WandSparkles size={19} />
             Caption studio<span className="new-tag">NEW</span>
           </NavLink>
-          <NavLink to="/knowledge" onClick={close}>
+          <NavLink to={route('knowledge')} onClick={close}>
             <BookOpen size={19} />
             Knowledge hub
             <ArrowUpRight className="nav-arrow" size={14} />
           </NavLink>
+          {workspace && (
+            <NavLink to="/instagram/privacy" onClick={close}>
+              <ShieldCheck size={19} />
+              What we can see
+            </NavLink>
+          )}
         </nav>
         <div className="sidebar-bottom">
           <div className="sidebar-coach">
@@ -128,7 +153,7 @@ export function Shell({
               <br />A lot more creativity.
             </h3>
             <p>Your next great reel starts with one good insight.</p>
-            <Link to="/reels/slow-mornings" onClick={close}>
+            <Link to={workspace ? '/instagram/reels' : '/reels/slow-mornings'} onClick={close}>
               Find your next move <ArrowUpRight size={15} />
             </Link>
           </div>
@@ -146,14 +171,26 @@ export function Shell({
             </strong>
           </div>
           <div className="sidebar-profile">
-            <img src={creator.avatar} alt="Alex Morgan" />
+            <img src={person.avatar || '/favicon.svg'} alt={person.name} />
             <div>
-              <strong>Alex Morgan</strong>
-              <span>@{creator.handle}</span>
+              <strong>{person.name}</strong>
+              <span>{person.handle ? `@${person.handle}` : 'Professional account'}</span>
             </div>
-            <Link to="/" aria-label="Leave demo" title="Leave demo">
-              <LogOut size={17} />
-            </Link>
+            {workspace ? (
+              <button
+                className="icon-button"
+                onClick={workspace.onDisconnect}
+                disabled={workspace.disconnecting}
+                aria-label="Disconnect Instagram"
+                title="Disconnect Instagram"
+              >
+                <LogOut size={17} />
+              </button>
+            ) : (
+              <Link to="/" aria-label="Leave demo" title="Leave demo">
+                <LogOut size={17} />
+              </Link>
+            )}
           </div>
         </div>
       </aside>
@@ -175,7 +212,7 @@ export function Shell({
           <div className="topbar-actions">
             <span className="demo-pill">
               <span />
-              Demo workspace
+              {workspace ? 'Instagram workspace' : 'Demo workspace'}
             </span>
             <ThemeButton theme={theme} toggle={toggleTheme} />
             <div className="popover-wrap">
@@ -197,10 +234,11 @@ export function Shell({
                     You’re all caught up <Check size={16} />
                   </div>
                   <p>
-                    Your demo workspace is ready. Explore 15 reels and find your next creative
-                    breakthrough.
+                    {workspace
+                      ? 'Your real account data stays separate from Demo Mode. Missing metrics are never replaced with mock numbers.'
+                      : 'Your demo workspace is ready. Explore 15 reels and find your next creative breakthrough.'}
                   </p>
-                  <Link to="/knowledge" onClick={() => setNotices(false)}>
+                  <Link to={route('knowledge')} onClick={() => setNotices(false)}>
                     View the latest knowledge <ArrowUpRight size={14} />
                   </Link>
                 </div>
@@ -217,17 +255,29 @@ export function Shell({
                 aria-label="Account menu"
                 aria-expanded={profileOpen}
               >
-                <img src={creator.avatar} alt="" />
+                <img src={person.avatar || '/favicon.svg'} alt="" />
                 <ChevronDown size={13} />
               </button>
               {profileOpen && (
                 <div className="popover profile-popover">
-                  <strong>Alex Morgan</strong>
-                  <span>@alex.creates · Demo account</span>
-                  <Link to="/" onClick={() => setProfileOpen(false)}>
-                    <LogOut size={15} />
-                    Leave demo
-                  </Link>
+                  <strong>{person.name}</strong>
+                  <span>
+                    {workspace ? 'Instagram professional account' : '@alex.creates · Demo account'}
+                  </span>
+                  {workspace ? (
+                    <button
+                      className="button button-secondary"
+                      onClick={workspace.onDisconnect}
+                      disabled={workspace.disconnecting}
+                    >
+                      Disconnect Instagram
+                    </button>
+                  ) : (
+                    <Link to="/" onClick={() => setProfileOpen(false)}>
+                      <LogOut size={15} />
+                      Leave demo
+                    </Link>
+                  )}
                 </div>
               )}
             </div>
@@ -239,7 +289,10 @@ export function Shell({
         <footer className="app-footer">
           <span>Made for the humans behind the content.</span>
           <span>
-            <Instagram size={12} /> Independent demo. Not affiliated with Meta.
+            <Instagram size={12} />{' '}
+            {workspace
+              ? 'Independent app. Not affiliated with Meta.'
+              : 'Independent demo. Not affiliated with Meta.'}
           </span>
         </footer>
       </div>

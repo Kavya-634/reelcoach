@@ -8,9 +8,11 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && tsc -p tsconfig.server.json --noEmit && vite build",
+    "build:server": "tsc -p tsconfig.server.json",
+    "start:server": "node .server-dist/server/index.js",
     "preview": "vite preview",
-    "test": "vitest run src",
+    "test": "vitest run src server api",
     "test:e2e": "playwright test",
     "test:watch": "vitest src",
     "format": "prettier --write .",

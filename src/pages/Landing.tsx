@@ -232,20 +232,31 @@ export function Landing({ theme, toggleTheme }: { theme: string; toggleTheme: ()
         <a href="#main-content" aria-label="Back to top">
           Back to top <ArrowDown className="rotate" size={14} />
         </a>
-        <small>Demo only · Not affiliated with Instagram or Meta</small>
+        <small>
+          Demo Mode available · Not affiliated with Instagram or Meta ·{' '}
+          <Link to="/what-reelcoach-can-see">What ReelCoach Can See</Link>
+        </small>
       </footer>
       {showConnect && (
-        <Modal title="The connection comes next." onClose={closeModal}>
+        <Modal title="Your account. Connected securely." onClose={closeModal}>
           <p>
-            ReelCoach is currently a frontend demo. Instagram sign-in isn’t connected, and we never
-            ask for your credentials.
+            Sign in through Meta’s official Unified Login dialog, which offers Instagram sign-in.
+            ReelCoach never asks for your Instagram password. A professional account and business
+            portfolio are required.
           </p>
           <p>
-            Step into Alex’s sample workspace to try the full experience. No account, no
-            permissions, no uploads to a server.
+            We need profile/media and insights permissions. Meta’s compatible configuration may also
+            require messaging permission, but ReelCoach never reads or sends messages or subscribes
+            to message events. Tokens stay in our private server’s temporary memory.
           </p>
-          <Link to="/dashboard" className="button button-primary" onClick={closeModal}>
-            Try Demo Mode <ArrowRight size={16} />
+          <Link className="text-link" to="/what-reelcoach-can-see" onClick={closeModal}>
+            What ReelCoach Can See <ArrowUpRight size={14} />
+          </Link>
+          <a href="/api/instagram/login" className="button button-primary">
+            Continue securely with Instagram <ArrowRight size={16} />
+          </a>
+          <Link to="/dashboard" className="button button-secondary" onClick={closeModal}>
+            Try Demo Mode
           </Link>
         </Modal>
       )}

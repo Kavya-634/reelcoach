@@ -6,7 +6,20 @@
 
 ![ReelCoach creator dashboard](docs/screenshots/dashboard.png)
 
-> Frontend demo only. All creator identities, metrics, and coaching are fictional. There is no Instagram OAuth, real Instagram data, AI API, server-side processing, or analytics tracker.
+> **Demo Mode stays independent.** A real Instagram extension now uses Meta's official Unified Login and a separately hosted, RAM-only backend. Live OAuth requires your privately configured Meta app and backend; no credentials are included. No AI API, database, scraping, or analytics tracker is used.
+
+## Connect real Instagram accounts
+
+Start with **[Instagram setup and credentials](docs/instagram-setup.md)** and **[.env.example](.env.example)**. See **[the verified API contract](docs/instagram-api-contract.md)** for exact endpoints, permissions, available metrics, and documented limitations.
+
+- **Official authentication:** the landing button explains access, then opens Meta's official Unified Login dialog with Instagram sign-in. Current Meta documentation no longer permits new apps to set up the older standalone Instagram Login flow. The approved new-app setup requires a business portfolio, Meta App ID/Secret, and a compatible Configuration ID.
+- **Real workspace (`/instagram`):** actual profile/follower data, 30-day account totals and available daily reach, paginated owned reels, nullable metrics, and a shared-account selector. It never falls back to demo fixtures.
+- **Owned-reel analysis (`/instagram/reels/:id`):** server-enforced ownership. Paste a Reel permalink to locate it within the selected account's own media. Other-account details are refused. Generic creative prompts are not misrepresented as AI analysis.
+- **Transparency:** [What ReelCoach Can See](https://reelcoach.vercel.app/what-reelcoach-can-see), clear explanations for personal accounts/expired sessions/permissions/outages, and a visible Disconnect Instagram action.
+- **No database:** the separate backend holds short-lived tokens and minimal authentication state in one process's RAM. The browser gets only an opaque HttpOnly session cookie. Profiles/reels/metrics are fetched on demand, not persisted. Restart/expiry requires reconnecting. Disconnect invalidates the session and prevents late responses from restoring data.
+- **Honest permission disclosure:** Meta's default Unified Login configuration requires a messaging permission alongside profile access; insights must be added. ReelCoach never calls messaging endpoints or subscribes to message events. This is disclosed before consent rather than hidden.
+
+**Deployment prerequisite:** the Vercel frontend/API proxy can deploy independently, but real sign-in is not operational until you deploy the always-on single-process backend and configure credentials on the correct hosts. A `.env.example`, Dockerfile, security/hosting requirements, and exact Meta/Vercel dashboard instructions are provided. Live Meta account testing must be performed after setup; automated integration tests use controlled provider fixtures, not a real account.
 
 ## Quick start
 
@@ -19,19 +32,20 @@ npm ci
 npm run dev
 ```
 
-Vite prints the local address. No environment variables or API keys are required.
+Vite prints the local address. No environment variables or API keys are required for Demo Mode. Real Instagram setup is documented separately above.
 
 ```sh
 npm run build          # TypeScript check + production bundle
 npm run preview        # Serve the production bundle locally
-npm test               # 24 deterministic unit tests
+npm test               # Unit, backend-security, and API-proxy tests; no Meta credentials
+npm run build:server   # Compile the separately hosted RAM backend
 npm run test:watch     # Interactive unit tests
 npm run format:check   # Check source formatting
 ```
 
 ## Explore the demo
 
-- **Landing (`/`)** — Introduces ReelCoach. “Try Demo Mode” loads Alex’s sample workspace. “Continue with Instagram” opens an honest explanation that sign-in is not connected; it never collects credentials.
+- **Landing (`/`)** — Introduces ReelCoach. “Try Demo Mode” loads Alex’s sample workspace. “Continue with Instagram” opens an access disclosure and then Meta's official authorization flow; it never collects Instagram credentials.
 - **Dashboard (`/dashboard`)** — Fictional creator profile, 24,832 followers, four summary metrics, 30 daily data points, metric switching, 7/14/30-day chart ranges, CSV report download, coaching cards, reel spotlights, and a searchable/filterable/sortable paginated metrics table.
 - **Reel library (`/reels`)** — All 15 sample reels. Views, reach, likes, comments, shares, saves, average watch time, and creator-relative Hit/Average/Flop badges. Search by title/topic; sort any metric; filter performance.
 - **Analysis (`/reels/:id`)** — Metrics, Hook, Script, Voice, Visuals, Pacing, CTA, and Fixes. Copy coaching starters, check off editing experiments, and carry a reel’s topic into Caption Studio. Covers are stock photos, not playable sample reels.
@@ -74,6 +88,7 @@ Update both file-level and per-entry dates when editing. The UI uses those dates
 - Draft URLs are validated as HTTP(S) but never fetched, opened, or used to retrieve content.
 - Caption output depends on the entered **topic and tone**, not the file’s pixels/audio or link contents. It is local template generation, not AI inference.
 - The only persisted preference is `reelcoach-theme` in localStorage. Caption drafts, files, and checklist state do not persist across page reloads.
+- Real account data also stays out of localStorage/sessionStorage. Its short-lived HttpOnly cookie contains an opaque session identifier, never an Instagram access token.
 - Sample images and variable fonts are self-hosted. Reference links leave the app only when clicked.
 - Browser clipboard access needs a secure context; if denied, select the visible output text and copy manually.
 - This project is independent and not affiliated with Instagram or Meta.
@@ -88,7 +103,7 @@ The app is deployed at **[reelcoach.vercel.app](https://reelcoach.vercel.app)**.
 - **Build command:** `npm run build`
 - **Output directory:** `dist`
 - **Node version:** 22.x
-- **Environment variables:** none
+- **Environment variables:** none for Demo Mode; `APP_ORIGIN`, `AUTH_BACKEND_ORIGIN`, and `AUTH_BACKEND_PROXY_SECRET` for the real-account proxy. Meta credentials belong only on the private backend. See [setup](docs/instagram-setup.md).
 
 [vercel.json](vercel.json) includes SPA rewrites for direct route loads and basic security headers. Static image/font assets remain accessible. Connecting the GitHub repository enables production deployments from `main` and preview deployments for pull requests.
 
@@ -101,7 +116,7 @@ npx vercel --prod
 
 ## Browser tests
 
-The Playwright suite runs the same 12 scenarios on desktop and mobile (24 checks): demo entry, Instagram explanation, theme persistence, charts/export/pagination, reel filtering/sorting, all analysis sections, caption generation, draft URL validation, local file previews, source-linked knowledge, unknown routes, and viewport containment.
+The Playwright suite covers the original demo plus real-account UI fixtures on desktop and mobile: demo entry and independence from the API, permission disclosure, theme persistence, charts/export/pagination, reel filtering/sorting, all analysis sections, caption generation, file previews, knowledge sources, real profile/missing-value rendering, owned/foreign link handling, disconnect, recovery messages, privacy, and viewport containment.
 
 ```sh
 npx playwright install chromium
@@ -116,7 +131,7 @@ CHROME_PATH="/path/to/chrome" npm run test:e2e
 
 The test server uses port 4198 with `--strictPort` so it cannot accidentally test another project. Set `PLAYWRIGHT_BASE_URL` to test a deployed instance.
 
-Verified: **24 unit tests**, **24 desktop/mobile browser checks**, successful production build, and zero reported npm audit vulnerabilities at the time of delivery.
+Security tests exercise actual local HTTP handlers with a fake Meta transport: browser-bound single-use OAuth state, code exchange, scope verification, opaque cookies, owner checks, pagination/URL restrictions, provider-error sanitization, restart/expiry, disconnect replay, and races with in-flight API/OAuth responses. Passing fixtures do not establish that Meta has approved your app or that credentials are configured.
 
 An optional [GitHub Actions template](docs/ci-template.yml) is included. It is **not active**: the available GitHub OAuth credential lacks the `workflow` scope. Copy it to `.github/workflows/ci.yml` with workflow-write permissions to enable hosted CI. This does not affect Vercel's Git-connected deployments.
 
@@ -133,6 +148,11 @@ src/
   lib/analytics.ts         Median, performance classification, engagement calculations
   lib/captions.ts          Deterministic caption templates and draft URL validation
   knowledge/               Date-stamped creative prompts and platform notes
+  instagram/               Independent real-account UI, safe DTOs, privacy and errors
+server/                    RAM sessions, official Meta client, OAuth and secure API handlers
+api/instagram/             Token-free Vercel proxy to the separately hosted backend
+docs/instagram-setup.md    Meta, backend, and Vercel configuration instructions
+docs/instagram-api-contract.md  Primary-source field/permission/metric audit
 public/images/             Self-hosted stock cover/avatar imagery
 e2e/                       Desktop and mobile browser tests
 ```
@@ -143,6 +163,6 @@ Cover and avatar images are downloaded from Unsplash and used only as fictional 
 
 DM Sans and Manrope are bundled through Fontsource under their respective SIL Open Font Licenses. Lucide icons are distributed under the ISC license.
 
-## Before adding real integrations
+## Before public launch or adding AI
 
-Replace fixtures behind a typed data interface; add server-side OAuth/token handling, explicit permissions and consent, validated media ingestion, real analytics, production-safe AI calls, rate limiting, secret management, verified policy sources, and retention/deletion controls. Never put Instagram tokens or AI secrets in `VITE_*` variables: those are shipped to the browser.
+Deploy/configure the RAM backend, test with your own Creator/Business account, complete Meta App Review/Advanced Access and any business verification, confirm the exact consent permissions, and review your public policy/operator information. No AI content analysis is implemented. If added later, keep AI secrets server-side and obtain explicit media-processing consent. Never put Instagram tokens or AI secrets in `VITE_*` variables: those are shipped to the browser.
