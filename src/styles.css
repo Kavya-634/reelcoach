@@ -2403,30 +2403,6 @@ tbody tr:hover {
   color: #b6ed7410;
   transform: rotate(10deg);
 }
-.knowledge-warning {
-  border: 1px solid #edb49625;
-  background: #edb49607;
-  padding: 16px 20px;
-  border-radius: 8px;
-  display: flex;
-  gap: 11px;
-  align-items: flex-start;
-  margin-bottom: 29px;
-}
-.knowledge-warning > svg {
-  color: var(--peach);
-  margin-top: 2px;
-}
-.knowledge-warning strong {
-  font-size: 11px;
-  font-weight: 500;
-}
-.knowledge-warning p {
-  font-size: 10px;
-  color: var(--text-muted);
-  line-height: 1.9;
-  margin-top: 4px;
-}
 .knowledge-toolbar {
   display: flex;
   justify-content: space-between;
@@ -2472,8 +2448,8 @@ tbody tr:hover {
   align-items: center;
   margin-bottom: 8px;
 }
-.knowledge-status.warning {
-  color: var(--peach);
+.knowledge-status.official {
+  color: var(--lime-chart);
 }
 .knowledge-card h2 {
   font-size: 17px;
@@ -2487,6 +2463,42 @@ tbody tr:hover {
   line-height: 1.95;
   margin-top: 12px;
   padding-bottom: 25px;
+}
+.knowledge-evidence {
+  margin: 0 0 23px;
+  padding: 12px 0 12px 13px;
+  border-left: 2px solid var(--lime-chart);
+}
+.knowledge-evidence > span {
+  color: var(--lime-chart);
+  font-size: 7px;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+.knowledge-evidence blockquote {
+  margin: 8px 0;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.8;
+}
+.knowledge-evidence small {
+  display: block;
+  font-size: 8px;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
+.knowledge-evidence a {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin-top: 9px;
+  font-size: 9px;
+  color: var(--lime-chart);
+  line-height: 1.8;
+}
+.knowledge-evidence a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 .knowledge-card-footer {
   margin-top: auto;
@@ -4554,16 +4566,6 @@ tbody tr:hover {
   }
   .knowledge-hero p {
     font-size: 10px;
-  }
-  .knowledge-warning {
-    padding: 15px;
-    gap: 10px;
-  }
-  .knowledge-warning strong {
-    font-size: 10px;
-  }
-  .knowledge-warning p {
-    font-size: 9px;
   }
   .knowledge-toolbar {
     gap: 14px;

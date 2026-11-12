@@ -57,6 +57,20 @@ describe('knowledge transparency', () => {
   it('makes the hashtag verification reminder explicit', () => {
     expect(metaRules.maxHashtags).toBe(5);
     expect(metaRules._comment).toMatch(/verify.*Meta.*official announcement/i);
-    expect(metaRules.entries[0].status).toBe('needs-verification');
+  });
+  it('replaces the limit warning with source-checked Search advice', () => {
+    const entry = metaRules.entries[0];
+    expect(entry.title).toBe('Keywords first, hashtags with purpose');
+    expect(entry.status).toBe('official-guidance');
+    expect(entry.source).toBe(
+      'https://creators.instagram.com/blog/tips-for-improving-your-reach/?locale=en_US',
+    );
+    expect(entry.sourcePublishedAt).toBe('2023-05-31');
+    expect(entry.verifiedAt).toBe('2026-11-12');
+    expect(entry.sourceQuote).toContain('keywords');
+    expect(entry.sourceQuote).toContain('hashtags');
+    expect(entry.supportingSourcePublishedAt).toBe('2021-08-25');
+    expect(entry.description).toContain('not a Meta claim');
+    expect(metaRules.entries.some((note) => note.title.includes('Hashtag limit'))).toBe(false);
   });
 });

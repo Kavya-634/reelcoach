@@ -24,7 +24,7 @@ Vite prints the local address. No environment variables or API keys are required
 ```sh
 npm run build          # TypeScript check + production bundle
 npm run preview        # Serve the production bundle locally
-npm test               # 23 deterministic unit tests
+npm test               # 24 deterministic unit tests
 npm run test:watch     # Interactive unit tests
 npm run format:check   # Check source formatting
 ```
@@ -36,7 +36,7 @@ npm run format:check   # Check source formatting
 - **Reel library (`/reels`)** — All 15 sample reels. Views, reach, likes, comments, shares, saves, average watch time, and creator-relative Hit/Average/Flop badges. Search by title/topic; sort any metric; filter performance.
 - **Analysis (`/reels/:id`)** — Metrics, Hook, Script, Voice, Visuals, Pacing, CTA, and Fixes. Copy coaching starters, check off editing experiments, and carry a reel’s topic into Caption Studio. Covers are stock photos, not playable sample reels.
 - **Caption Studio (`/studio`)** — Local image/video selection, drag-and-drop, previews, draft-link validation, topic context, three tones, three deterministic caption options, keywords, and up to five hashtags. Copy each output. “Try with sample content” works without selecting a file.
-- **Knowledge (`/knowledge`)** — Search/filter creative prompts and platform notes. Visible “Knowledge last updated” date, per-entry review dates, reference links, and clear verification warnings.
+- **Knowledge (`/knowledge`)** — Search/filter creative prompts and platform notes. Visible “Knowledge last updated” date, official-source labels and quotations, original publication dates, source-check dates, and reference links.
 
 Navigation includes a mobile drawer, accessible icon labels, a skip link, keyboard focus indicators, a focus-trapped Instagram explanation dialog, reduced-motion support, and helpful unknown-route states. Wide metric tables scroll inside their own containers rather than widening the phone viewport.
 
@@ -59,7 +59,11 @@ Engagement = `(likes + comments + shares + saves) / reach × 100`. The dashboard
 - [src/knowledge/trends.json](src/knowledge/trends.json) — Illustrative creative prompts, not live trend reports.
 - [src/knowledge/metaRules.json](src/knowledge/metaRules.json) — Platform/editorial notes and `maxHashtags: 5`.
 
-Every entry has `title`, `description`, `source`, and `lastUpdated`. Because JSON does not support comments, `metaRules.json` contains an explicit `_comment` reminding us to **verify the five-hashtag assumption against Meta’s official announcement before production**. It is visibly flagged as unverified in the app. Source URLs are reference destinations, not evidence that an announcement was checked.
+Every entry has `title`, `description`, `source`, and `lastUpdated`. Knowledge Hub now replaces its hashtag-limit warning with **“Keywords first, hashtags with purpose.”** That note links to Instagram's [Tips for Improving Your Reach](https://creators.instagram.com/blog/tips-for-improving-your-reach/?locale=en_US) (May 31, 2023) and [Breaking Down How Instagram Search Works](https://about.instagram.com/blog/announcements/break-down-how-instagram-search-works) (August 25, 2021), both read directly on November 12, 2026. Its official-source quotation, original publication dates, and source-check date are visible in the UI.
+
+The official guidance recommends relevant keywords **and hashtags** for Search. It does not establish that hashtags are dead or that keywords universally outrank hashtags or guarantee Reels reach. Putting natural keywords first in the caption-writing workflow is ReelCoach's practical advice, distinguished from Meta's statements. Other cards remain illustrative/editorial, not verified current trends.
+
+Caption Studio's five-suggestion cap is unchanged. Because JSON does not support comments, the internal `_comment` still reminds maintainers to verify the limit against Meta's official announcement before production; it is no longer a Knowledge Hub card or warning banner.
 
 Update both file-level and per-entry dates when editing. The UI uses those dates, not the browser’s current date. No API automatically refreshes knowledge.
 
@@ -112,7 +116,7 @@ CHROME_PATH="/path/to/chrome" npm run test:e2e
 
 The test server uses port 4198 with `--strictPort` so it cannot accidentally test another project. Set `PLAYWRIGHT_BASE_URL` to test a deployed instance.
 
-Verified: **23 unit tests**, **24 desktop/mobile browser checks**, successful production build, and zero reported npm audit vulnerabilities at the time of delivery.
+Verified: **24 unit tests**, **24 desktop/mobile browser checks**, successful production build, and zero reported npm audit vulnerabilities at the time of delivery.
 
 An optional [GitHub Actions template](docs/ci-template.yml) is included. It is **not active**: the available GitHub OAuth credential lacks the `workflow` scope. Copy it to `.github/workflows/ci.yml` with workflow-write permissions to enable hosted CI. This does not affect Vercel's Git-connected deployments.
 

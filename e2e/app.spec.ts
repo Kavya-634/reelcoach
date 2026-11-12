@@ -136,18 +136,42 @@ test('files stay local, with type validation and a removable preview', async ({ 
   await expect(page.getByText('Drop your next great idea here')).toBeVisible();
 });
 
-test('knowledge shows dated source links and the unverified policy note', async ({ page }) => {
+test('knowledge replaces the limit warning with dated official keyword guidance', async ({
+  page,
+}) => {
   await page.goto('/knowledge');
   await expect(page.getByText('Knowledge last updated: Nov 12, 2026')).toBeVisible();
   await expect(page.locator('.knowledge-card')).toHaveCount(6);
   await page.getByRole('button', { name: 'Platform notes', exact: true }).click();
   await expect(page.locator('.knowledge-card')).toHaveCount(3);
-  await expect(page.getByText('Needs verification', { exact: true })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Reference' }).first()).toHaveAttribute(
+  const note = page
+    .locator('.knowledge-card')
+    .filter({ hasText: 'Keywords first, hashtags with purpose' });
+  await expect(note.getByText('Official Instagram guidance', { exact: true })).toBeVisible();
+  await expect(note).toContainText('not a Meta claim that keywords always outrank hashtags');
+  await expect(note).toContainText('Source checked Nov 12, 2026');
+  await expect(note).toContainText('Published May 31, 2023');
+  await expect(note.locator('blockquote')).toContainText('your bio, and your hashtags');
+  await expect(note.getByRole('link', { name: 'Official source' })).toHaveAttribute(
     'href',
-    'https://creators.instagram.com/',
+    'https://creators.instagram.com/blog/tips-for-improving-your-reach/?locale=en_US',
   );
+  await expect(
+    note.getByRole('link', { name: /Breaking Down How Instagram Search Works/ }),
+  ).toHaveAttribute(
+    'href',
+    'https://about.instagram.com/blog/announcements/break-down-how-instagram-search-works',
+  );
+  await expect(
+    page.getByText('Hashtag limit — verification required', { exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByText('The five-hashtag limit is a demo product choice', { exact: false }),
+  ).toHaveCount(0);
+  await expect(page.getByText('Needs verification', { exact: true })).toHaveCount(0);
   await page.getByLabel('Search knowledge').fill('hashtag');
+  await expect(page.locator('.knowledge-card')).toHaveCount(1);
+  await page.getByLabel('Search knowledge').fill('keywords');
   await expect(page.locator('.knowledge-card')).toHaveCount(1);
 });
 
