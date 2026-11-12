@@ -2,13 +2,15 @@
 
 **Your next reel, better.** A creator-friendly Instagram strategy workspace built with React, Vite, and TypeScript. Charcoal-and-lime styling, editorial typography, responsive layouts, and persistent light/dark themes.
 
-[Public GitHub repository](https://github.com/Kavya-634/reelcoach)
+[Live demo](https://reelcoach.vercel.app) · [Public GitHub repository](https://github.com/Kavya-634/reelcoach)
+
+![ReelCoach creator dashboard](docs/screenshots/dashboard.png)
 
 > Frontend demo only. All creator identities, metrics, and coaching are fictional. There is no Instagram OAuth, real Instagram data, AI API, server-side processing, or analytics tracker.
 
 ## Quick start
 
-Requires Node.js **22.12+** (Node 22 recommended) and npm.
+Requires Node.js **22.12+ in the 22.x release line** and npm. The project pins Node 22 for reproducible Vercel builds.
 
 ```sh
 git clone https://github.com/Kavya-634/reelcoach.git
@@ -74,7 +76,7 @@ Update both file-level and per-entry dates when editing. The UI uses those dates
 
 ## Deploy to Vercel
 
-Import [Kavya-634/reelcoach](https://github.com/Kavya-634/reelcoach) in Vercel:
+The app is deployed at **[reelcoach.vercel.app](https://reelcoach.vercel.app)**. Its public GitHub repository is connected to the Vercel project, so pushes to `main` trigger production builds. To deploy a fork, import your repository in Vercel:
 
 - **Framework:** Vite
 - **Root directory:** repository root (`.`)
@@ -110,6 +112,10 @@ CHROME_PATH="/path/to/chrome" npm run test:e2e
 
 The test server uses port 4198 with `--strictPort` so it cannot accidentally test another project. Set `PLAYWRIGHT_BASE_URL` to test a deployed instance.
 
+Verified: **23 unit tests**, **24 desktop/mobile browser checks**, successful production build, and zero reported npm audit vulnerabilities at the time of delivery.
+
+An optional [GitHub Actions template](docs/ci-template.yml) is included. It is **not active**: the available GitHub OAuth credential lacks the `workflow` scope. Copy it to `.github/workflows/ci.yml` with workflow-write permissions to enable hosted CI. This does not affect Vercel's Git-connected deployments.
+
 ## Source map
 
 ```text
@@ -129,7 +135,7 @@ e2e/                       Desktop and mobile browser tests
 
 ## Assets and attribution
 
-Cover and avatar images are downloaded from Unsplash and used only as fictional illustrative content. Their photo IDs are retained in the filenames; each original is available at `https://unsplash.com/photos/<photo-id-without-photo-prefix>`, or via its `https://images.unsplash.com/<photo-id>` image endpoint. See [Unsplash’s license](https://unsplash.com/license). Real people in the photos are not claimed to be ReelCoach users or the fictional creator.
+Cover and avatar images are downloaded from Unsplash and used only as fictional illustrative content. Their image identifiers are retained in the filenames; the original image endpoints use `https://images.unsplash.com/<photo-id>`. See [Unsplash’s license](https://unsplash.com/license). Real people in the photos are not claimed to be ReelCoach users or the fictional creator.
 
 DM Sans and Manrope are bundled through Fontsource under their respective SIL Open Font Licenses. Lucide icons are distributed under the ISC license.
 
