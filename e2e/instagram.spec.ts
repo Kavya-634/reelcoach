@@ -184,6 +184,34 @@ for (const [code, heading] of [
   });
 }
 
+test('unconfigured login explains activation and links to a paid backend option without collecting secrets', async ({
+  page,
+}) => {
+  await page.goto('/instagram/connect?error=not_configured');
+  await expect(
+    page.getByRole('heading', { name: 'Three setup steps before the first login.' }),
+  ).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Open step-by-step setup guide' })).toHaveAttribute(
+    'href',
+    'https://github.com/Kavya-634/reelcoach/blob/main/docs/activate-instagram.md',
+  );
+  const deploy = page.getByRole('link', { name: 'Deploy backend on Render' });
+  expect(new URL((await deploy.getAttribute('href'))!).searchParams.get('repo')).toBe(
+    'https://github.com/Kavya-634/reelcoach',
+  );
+  await expect(page.getByText('paid Starter plan', { exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Check connection again' })).toHaveAttribute(
+    'href',
+    '/api/instagram/login',
+  );
+  await expect(page.locator('input[type="password"]')).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+    page.viewportSize()!.width,
+  );
+  await page.getByRole('link', { name: 'Try Demo Mode', exact: true }).click();
+  await expect(page.getByText('24,832 total followers')).toBeVisible();
+});
+
 test('privacy explanation is public, candid about consent, and responsive', async ({ page }) => {
   await page.goto('/what-reelcoach-can-see');
   await expect(page.getByRole('heading', { name: 'What ReelCoach Can See' })).toBeVisible();

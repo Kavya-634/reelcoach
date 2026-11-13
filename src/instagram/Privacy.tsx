@@ -140,6 +140,7 @@ export function ConnectionPage() {
   const query = new URLSearchParams(window.location.search);
   const value = query.get('error');
   const error = value ? errors[errorCode(value)] : null;
+  const needsSetup = value === 'not_configured';
   return (
     <div className="page connection-page">
       <PageHeading
@@ -149,6 +150,49 @@ export function ConnectionPage() {
           error?.message ?? 'Connect a Creator or Business account through Meta’s official sign-in.'
         }
       />
+      {needsSetup && (
+        <section className="panel privacy-card" aria-labelledby="activation-title">
+          <span className="eyebrow">FOR THE REELCOACH OWNER</span>
+          <h2 id="activation-title">Three setup steps before the first login.</h2>
+          <ol>
+            <li>
+              <strong>Create the Meta app.</strong> Configure Unified Login and get your Meta App
+              ID, App Secret, and Configuration ID privately.
+            </li>
+            <li>
+              <strong>Deploy the private backend.</strong> Use the prepared Render Blueprint or
+              another always-on, single-instance host. Keep tokens in RAM, not a database.
+            </li>
+            <li>
+              <strong>Connect Vercel and redeploy.</strong> Add the backend HTTPS URL and matching
+              shared secret to Vercel’s Production environment variables.
+            </li>
+          </ol>
+          <div className="connection-actions">
+            <a
+              className="button button-primary"
+              href="https://github.com/Kavya-634/reelcoach/blob/main/docs/activate-instagram.md"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open step-by-step setup guide <ArrowUpRight size={14} />
+            </a>
+            <a
+              className="button button-secondary"
+              href="https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2FKavya-634%2Freelcoach"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Deploy backend on Render <ArrowUpRight size={14} />
+            </a>
+          </div>
+          <p>
+            The optional Render Blueprint uses a <strong>paid Starter plan</strong>. Review billing
+            before approving deployment. No service is created automatically. Enter secrets only in
+            the hosting providers’ private settings—never in chat.
+          </p>
+        </section>
+      )}
       <AccessExplanation />
       <section className="panel privacy-card">
         <h2>Before you connect</h2>
@@ -165,7 +209,11 @@ export function ConnectionPage() {
         <div className="connection-actions">
           <a className="button button-primary" href="/api/instagram/login">
             <Instagram size={17} />
-            {value ? 'Reconnect with Instagram' : 'Continue securely with Instagram'}
+            {needsSetup
+              ? 'Check connection again'
+              : value
+                ? 'Reconnect with Instagram'
+                : 'Continue securely with Instagram'}
             <ArrowUpRight size={15} />
           </a>
           <Link className="button button-secondary" to="/dashboard">

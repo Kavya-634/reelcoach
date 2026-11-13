@@ -109,6 +109,26 @@ describe('Vercel token-free proxy', () => {
       '/instagram/connect?error=unavailable',
     );
   });
+  it('turns backend login configuration errors into friendly redirects, not raw JSON', async () => {
+    configure();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response('{"error":{"code":"invalid_request"}}', {
+            status: 404,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+      ),
+    );
+    for (const path of ['/api/instagram/login', '/api/instagram/callback?code=private-code']) {
+      const r = await invoke(path);
+      expect(r.status).toBe(303);
+      expect(r.headers.Location).toBe('/instagram/connect?error=unavailable');
+      expect(r.body).toBe('');
+      expect(JSON.stringify(r)).not.toContain('private-code');
+    }
+  });
   it('rejects large body payloads before contacting the backend', async () => {
     configure();
     const outgoing = vi.fn();

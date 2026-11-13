@@ -1,0 +1,30 @@
+# Optional RAM-backend deployment. Creating this service uses Render's PAID Starter plan.
+# Review Render's current billing before approving deployment. No service is created by Git push.
+# Keep exactly one instance, no autoscaling and no disks/databases. Restarts end sessions.
+services:
+  - type: web
+    name: reelcoach-auth
+    runtime: docker
+    plan: starter
+    numInstances: 1
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeployTrigger: 'off'
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: APP_ORIGIN
+        value: https://reelcoach.vercel.app
+      - key: SESSION_TTL_SECONDS
+        value: '2700'
+      - key: META_APP_ID
+        sync: false
+      - key: META_APP_SECRET
+        sync: false
+      - key: META_CONFIG_ID
+        sync: false
+      - key: AUTH_BACKEND_PROXY_SECRET
+        generateValue: true
+      - key: META_WEBHOOK_VERIFY_TOKEN
+        generateValue: true

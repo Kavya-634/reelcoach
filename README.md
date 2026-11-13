@@ -10,7 +10,9 @@
 
 ## Connect real Instagram accounts
 
-Start with **[Instagram setup and credentials](docs/instagram-setup.md)** and **[.env.example](.env.example)**. See **[the verified API contract](docs/instagram-api-contract.md)** for exact endpoints, permissions, available metrics, and documented limitations.
+**Login shows “not configured”? Start with [Activate Instagram Login — click-by-click guide](docs/activate-instagram.md).** It walks through Meta setup, the optional [Render backend Blueprint](render.yaml), and the exact Vercel variables to save before redeploying. The Render option uses a paid Starter service; review billing before approving it. No backend is provisioned automatically.
+
+Full references: **[Instagram setup and credentials](docs/instagram-setup.md)**, **[.env.example](.env.example)**, and **[the verified API contract](docs/instagram-api-contract.md)** for exact endpoints, permissions, available metrics, and documented limitations.
 
 - **Official authentication:** the landing button explains access, then opens Meta's official Unified Login dialog with Instagram sign-in. Current Meta documentation no longer permits new apps to set up the older standalone Instagram Login flow. The approved new-app setup requires a business portfolio, Meta App ID/Secret, and a compatible Configuration ID.
 - **Real workspace (`/instagram`):** actual profile/follower data, 30-day account totals and available daily reach, paginated owned reels, nullable metrics, and a shared-account selector. It never falls back to demo fixtures.

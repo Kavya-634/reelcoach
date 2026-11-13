@@ -116,6 +116,13 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       res.end();
       return;
     }
+    // Login/callback are browser navigations, not JSON fetches. A backend configuration
+    // error (including a mismatched proxy secret) must show the friendly recovery page.
+    if (['/api/instagram/login', '/api/instagram/callback'].includes(path)) {
+      await response.body?.cancel();
+      fail('unavailable');
+      return;
+    }
     const text = await response.text();
     if (text.length > 2_000_000 || text.includes(process.env.AUTH_BACKEND_PROXY_SECRET))
       throw new Error();

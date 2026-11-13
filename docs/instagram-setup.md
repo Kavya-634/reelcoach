@@ -1,5 +1,7 @@
 # Configure the real Instagram integration
 
+For a guided deployment with fewer manual choices, follow **[Activate Instagram Login](activate-instagram.md)** first. It includes a Render Blueprint (paid Starter plan, one instance, no database) and the exact steps to connect it to Vercel. The reference below covers alternative hosts and operational requirements.
+
 ## Status and prerequisites
 
 This is an extension of the original demo, not a replacement. Demo Mode (`/dashboard`, `/reels`, `/studio`) requires no credentials. The real workspace is `/instagram`.
